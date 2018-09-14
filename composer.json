@@ -1,0 +1,10 @@
+{
+    "name": "nblackwe/php-csv",
+    "description": "minimal csv reader writer",
+    "type": "library",
+    "license": "MIT",
+    "require": {},
+    "autoload": {
+        "psr-4": { "nblackwe\\": "src/" }
+    }
+}
