@@ -32,6 +32,21 @@ composer install
 	   		array( '1', '2','3'),
 	   		array( '4', '5','6')
 	    ))
+	    ->iterateRowsAssoc(function($value, $index){
+
+	    	echo $value['label-one'];
+
+	    })
+	    ->iterateRowsObject(function($value, $index){
+
+	    	echo $value->{'label-one'};
+
+	    })
+	    ->iterateRows(function($value, $index){
+
+	    	echo $value[0];
+
+	    })
 	    ->toString();
 
 
