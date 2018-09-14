@@ -59,7 +59,7 @@ composer install
 
 
 	
-	$csv->getRowsWithValue(array('label-one'=>'1', 'label-one'=>'3')); // returns array(0,3)
+	$csv->getRowsWithValue(array('label-one'=>'1', 'label-three'=>'3')); // returns array(0,3)
     $csv->getRowsWithValue(array('label-three'=>'9')); // returns array(2)
 
 
