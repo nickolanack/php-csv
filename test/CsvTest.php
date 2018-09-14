@@ -76,7 +76,7 @@ class CsvTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(5), $csv->getRowsWithValue(array('three'=>'c')));
 
         $this->assertFalse($csv->areAllValuesUnique('three'));
-        
+        $this->assertEquals(array('one', 'two', 'three'), $csv->getFieldNames());
 
         $csv->iterateRowsObject(function($array, $i){
             $this->assertTrue(is_object($array));
@@ -86,6 +86,9 @@ class CsvTest extends PHPUnit_Framework_TestCase {
         });
 
         $csv->toFile('/tmp/test.csv');
+
+
+        $this->assertEquals(array('one', 'two', 'three'), (new nblackwe\Csv())->getFieldNames('/tmp/test.csv'));
 
         $csv=(new nblackwe\Csv())->fromFile('/tmp/test.csv');
 

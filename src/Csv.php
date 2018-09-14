@@ -6,9 +6,9 @@ class Csv {
 
 	protected $csv;
 
-	public function fromFile($filename, $options = array()) {
+	public function fromFile($filename, $options=array()) {
 
-		$bac_ = ini_get('auto_detect_line_endings');
+		$restore = ini_get('auto_detect_line_endings');
 		ini_set('auto_detect_line_endings', true);
 
 		$handle = fopen($filename, 'r');
@@ -16,30 +16,30 @@ class Csv {
 		if (!$handle) {
 			throw new \Exception('Invalid File, or Failed to read');
 		}
-		$this->fromResource($handle);
+		$this->fromResource($handle, $options);
 
 		fclose($handle);
-		ini_set('auto_detect_line_endings', $bac_);
+		ini_set('auto_detect_line_endings', $restore);
 
 	
 		return $this;
 	}
 
-	public  function fromString($text, $options = array()) {
+	public  function fromString($text, $options=array()) {
 
-		$bac_ = ini_get('auto_detect_line_endings');
+		$restore = ini_get('auto_detect_line_endings');
 		ini_set('auto_detect_line_endings', true);
 
 		$handle = fopen('data://text/plain,' . $text, 'r');
-		$this->fromResource($handle);
+		$this->fromResource($handle, $options);
 		fclose($handle);
-		ini_set('auto_detect_line_endings', $bac_);
+		ini_set('auto_detect_line_endings', $restore);
 
 	
 		return $this;
 	}
 
-	public function fromResource($handle, $options = array()) {
+	public function fromResource($handle,$options=array()) {
 		$default = array(
 			'hasHeader' => true,
 			'length' => 0,
@@ -56,26 +56,30 @@ class Csv {
 
 		// stream_encoding($handle, $csv['encoding']);
 
-		$c = 0;
+		$lineCount = 0;
 		while (($data = fgetcsv($handle, 0, ',')) !== false) {
 			if (key_exists('header', $csv) && count($csv['header']) == 0) {
-				$c++;
+				$lineCount++;
 				$csv['header'] = $data;
 				if ($csv['length'] == 0) {
 					$csv['length'] = count($data);
 				}
-			} else {
-				$c++;
-				$csv['rows'][] = $data;
-				$count = count($data);
-				if ($count > $csv['length'] && $csv['length'] > 0) {
-					throw new \Exception(
-						'CSV file contians longer than expected: (' . $csv['length'] . ':' . $count . ')');
-				}
+
+				continue;
+
 			}
+
+			$this->validateRow($data, $csv['length']); 
+			
+
+			$lineCount++;
+			$csv['rows'][] = $data;
+			
+
+			
 		}
 
-		if ($c <= 0) {
+		if ($lineCount <= 0) {
 			throw new \Exception('0 rows in document');
 		}
 
@@ -83,7 +87,16 @@ class Csv {
 		return $this;
 	}
 
-	public function create($header = false) {
+	private function validateRow($data, $len){
+		$count = count($data);
+		if ($count > $len && $len > 0) {
+			throw new \Exception(
+				'CSV file contians longer than expected: (' . $len . ':' . $count . ')');
+		}
+
+	}
+
+	public function create($header = null) {
 		$csv = array(
 			'rows' => array(),
 		);
@@ -113,15 +126,15 @@ class Csv {
 	}
 	public function toString() {
 		// Generate CSV data from array
-		$fh = fopen('php://temp', 'rw'); // don't create a file, attempt
+		$resource = fopen('php://temp', 'rw'); // don't create a file, attempt
 		// to use memory instead
-		fputcsv($fh, $this->csv['header']);
+		fputcsv($resource, $this->csv['header']);
 		foreach ($this->csv['rows'] as $row) {
-			fputcsv($fh, $row);
+			fputcsv($resource, $row);
 		}
-		rewind($fh);
-		$csv = stream_get_contents($fh);
-		fclose($fh);
+		rewind($resource);
+		$csv = stream_get_contents($resource);
+		fclose($resource);
 
 		return $csv;
 	}
@@ -131,9 +144,10 @@ class Csv {
 		
 		if (file_exists($file) && is_file($file)) {
 
+			$restore = ini_get('auto_detect_line_endings');
 			ini_set('auto_detect_line_endings', TRUE);
 			$handle = fopen($file, "r");
-			ini_set('auto_detect_line_endings', $bac_);
+			ini_set('auto_detect_line_endings', $restore);
 
 			if ($handle !== false) {
 				$data = fgetcsv($handle, 0, ",");
@@ -216,14 +230,14 @@ class Csv {
 	 *            ordered array of names to accociate cell values (optional will use csv)
 	 * @return array an string indexed array
 	 */
-	public function getRowAssoc($index, $fieldNames = false) {
+	public function getRowAssoc($index, $fieldNames = null) {
 		if (!$fieldNames) {
 			$fieldNames = $this->csv['header'];
 		}
 
 		return $this->_combine($fieldNames, $this->getRow($index));
 	}
-	public function getRowObject($index, $fieldNames = false) {
+	public function getRowObject($index, $fieldNames = null) {
 		return (object) $this->getRowAssoc($index, $fieldNames);
 	}
 
@@ -315,15 +329,15 @@ class Csv {
 	 */
 	public function distinctValues($fieldName) {
 		$values = array();
-		$i = array_search($fieldName, $this->getHeader());
-		if ($i === false) {
+		$index = array_search($fieldName, $this->getHeader());
+		if ($index === false) {
 			throw new \Exception('Invalid Field: ' . $fieldName);
 		}
 		$this->iterateRows(
-			function ($row) use (&$values, $i) {
+			function ($row) use (&$values, $index) {
 
-				if (!in_array($row[$i], $values)) {
-					$values[] = $row[$i];
+				if (!in_array($row[$index], $values)) {
+					$values[] = $row[$index];
 				}
 			});
 
@@ -338,19 +352,21 @@ class Csv {
 	 */
 	public function areAllValuesUnique($fieldName) {
 		$values = array();
-		$i = array_search($fieldName,  $this->getHeader());
-		if ($i === false) {
+		$index = array_search($fieldName,  $this->getHeader());
+		if ($index === false) {
 			throw new \Exception('Invalid Field: ' . $fieldName);
 		}
 		$result = true;
 		$this->iterateRows(
-			function ($row) use (&$values, $i, &$result) {
+			function ($row) use (&$values, $index, &$result) {
 
-				if (!in_array($row[$i], $values)) {
-					$values[] = $row[$i];
-				} else {
-					$result = false;
+				if (!in_array($row[$index], $values)) {
+					$values[] = $row[$index];
+					return;
 				}
+					
+				$result = false;
+				
 			});
 
 		return $result;

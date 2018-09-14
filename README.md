@@ -48,10 +48,12 @@ composer install
 		->countRows(); // should be 5 (not counting header)
 
 
+
+
 	//distinct values in a column
 	$csv->distinctValues('label-one'); // should be array('1', '4', '7');
 	
-	
+	$csv->getFieldNames(); //returns array('label-one',  'label-two',  'label-three')
 
 	
 
@@ -63,8 +65,8 @@ composer install
     $csv->getRowsWithValue(array('label-three'=>'9')); // returns array(2)
 
 
-
-
+    //read field names without parsing document
+    (new nblackwe\Csv())->getFieldNames('/tmp/test.csv'); //returns array('label-one',  'label-two',  'label-three')
     	
 
 
