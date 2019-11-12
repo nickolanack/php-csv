@@ -44,7 +44,9 @@ class Csv {
 			'hasHeader' => true,
 			'maxReadlines'=>-1, //read all
 			'length' => 0,
-			'countOnly'=>false
+			'countOnly'=>false,
+			'startAt'=>0,
+			'fill'=>-1 //fill all
 		);
 		// , 'encoding'=>'UTF-8'
 
@@ -80,6 +82,20 @@ class Csv {
 			if(key_exists('countOnly', $csv)&&$csv['countOnly']===true){
 				$csv['rows'][]=null;
 				continue;
+			}
+
+			if(key_exists('startAt', $csv)&&$csv['startAt']>=$lineCount){
+				$csv['rows'][]=null;
+				continue;
+			}
+
+			if(key_exists('fill', $csv)&&$csv['fill']>0){
+
+				if(key_exists('startAt', $csv)&&$csv['startAt']+$csv['fill']<$lineCount){
+					$csv['rows'][]=null;
+					continue;
+				}
+
 			}
 
 			$csv['rows'][] = $data;
@@ -306,8 +322,21 @@ class Csv {
 		return $keys;
 	}
 
-	public function iterateRows($callback) {
-		for ($i = 0; $i < $this->countRows(); $i++) {
+	public function iterateRows($callback, $options=array()) {
+
+
+		$i=0;
+		$num=$this->countRows();
+
+		if(key_exists('startAt', $options){
+			$i=$options['startAt'];
+		}
+
+		if(key_exists('number', $options){
+			$num=min($num, $i+$options['number']);
+		}
+
+		for ($i; $i < $num; $i++) {
 
 			$continue = $callback($this->getRow($i), $i);
 			if ($continue === false) {
@@ -318,8 +347,20 @@ class Csv {
 		return $this;
 	}
 
-	public function iterateRowsAssoc($callback) {
-		for ($i = 0; $i < $this->countRows(); $i++) {
+	public function iterateRowsAssoc($callback, $options) {
+
+		$i=0;
+		$num=$this->countRows();
+
+		if(key_exists('startAt', $options){
+			$i=$options['startAt'];
+		}
+
+		if(key_exists('number', $options){
+			$num=min($num, $i+$options['number']);
+		}
+
+		for ($i; $i < $num; $i++) {
 
 			$continue = $callback($this->getRowAssoc($i), $i);
 			if ($continue === false) {
