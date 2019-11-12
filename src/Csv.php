@@ -42,6 +42,7 @@ class Csv {
 	public function fromResource($handle,$options=array()) {
 		$default = array(
 			'hasHeader' => true,
+			'maxReadlines'=>-1, //read all
 			'length' => 0,
 		);
 		// , 'encoding'=>'UTF-8'
@@ -69,13 +70,19 @@ class Csv {
 
 			}
 
+			
+
 			$this->validateRow($data, $csv['length']); 
 			
 
 			$lineCount++;
 			$csv['rows'][] = $data;
 			
-
+			if(key_exists('maxReadlines', $csv)&&$csv['maxReadlines']>=1){
+				if($lineCount>=$csv['maxReadlines']){
+					break;
+				}
+			}
 			
 		}
 
