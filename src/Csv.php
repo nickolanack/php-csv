@@ -91,7 +91,7 @@ class Csv {
 
 			if(key_exists('number', $csv)&&$csv['number']>0){
 
-				if(key_exists('startAt', $csv)&&$csv['startAt']+$csv['number']<$lineCount){
+				if(key_exists('startAt', $csv)&&$csv['startAt']+$csv['number']<$lineCount-1){
 					$csv['rows'][]=null;
 					continue;
 				}
