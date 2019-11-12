@@ -354,7 +354,7 @@ class Csv {
 		$num=$this->countRows();
 
 		if(key_exists('startAt', $options)){
-			$i=$options['startAt'];ß
+			$i=$options['startAt'];
 		}
 
 		if(key_exists('number', $options)){
