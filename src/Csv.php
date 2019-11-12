@@ -329,11 +329,11 @@ class Csv {
 		$i=0;
 		$num=$this->countRows();
 
-		if(key_exists('startAt', $options){
+		if(key_exists('startAt', $options)){
 			$i=$options['startAt'];
 		}
 
-		if(key_exists('length', $options){
+		if(key_exists('length', $options)){
 			$num=min($num, $i+$options['length']);
 		}
 
@@ -353,11 +353,11 @@ class Csv {
 		$i=0;
 		$num=$this->countRows();
 
-		if(key_exists('startAt', $options){
+		if(key_exists('startAt', $options)){
 			$i=$options['startAt'];
 		}
 
-		if(key_exists('length', $options){
+		if(key_exists('length', $options)){
 			$num=min($num, $i+$options['length']);
 		}
 
