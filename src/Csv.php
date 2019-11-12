@@ -44,6 +44,7 @@ class Csv {
 			'hasHeader' => true,
 			'maxReadlines'=>-1, //read all
 			'length' => 0,
+			'countOnly'=>false
 		);
 		// , 'encoding'=>'UTF-8'
 
@@ -76,7 +77,13 @@ class Csv {
 			
 
 			$lineCount++;
+			if(key_exists('countOnly', $csv)&&$csv['countOnly']===true){
+				$csv['rows'][]=null;
+				continue;
+			}
+
 			$csv['rows'][] = $data;
+			
 			
 			if(key_exists('maxReadlines', $csv)&&$csv['maxReadlines']>=1){
 				if($lineCount>=$csv['maxReadlines']){
