@@ -46,7 +46,7 @@ class Csv {
 			'length' => 0,
 			'countOnly'=>false,
 			'startAt'=>0,
-			'fill'=>-1 //fill all
+			'length'=>-1 //fill all
 		);
 		// , 'encoding'=>'UTF-8'
 
@@ -89,13 +89,14 @@ class Csv {
 				continue;
 			}
 
-			if(key_exists('fill', $csv)&&$csv['fill']>0){
+			if(key_exists('length', $csv)&&$csv['length']>0){
 
-				if(key_exists('startAt', $csv)&&$csv['startAt']+$csv['fill']<$lineCount){
+				if(key_exists('startAt', $csv)&&$csv['startAt']+$csv['length']<$lineCount){
 					$csv['rows'][]=null;
 					continue;
 				}
 
+	
 			}
 
 			$csv['rows'][] = $data;
@@ -332,8 +333,8 @@ class Csv {
 			$i=$options['startAt'];
 		}
 
-		if(key_exists('number', $options){
-			$num=min($num, $i+$options['number']);
+		if(key_exists('length', $options){
+			$num=min($num, $i+$options['length']);
 		}
 
 		for ($i; $i < $num; $i++) {
@@ -356,8 +357,8 @@ class Csv {
 			$i=$options['startAt'];
 		}
 
-		if(key_exists('number', $options){
-			$num=min($num, $i+$options['number']);
+		if(key_exists('length', $options){
+			$num=min($num, $i+$options['length']);
 		}
 
 		for ($i; $i < $num; $i++) {
