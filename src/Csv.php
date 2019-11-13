@@ -118,6 +118,19 @@ class Csv {
 		return $this;
 	}
 
+	public function setHeader($header){
+
+		if(key_exists('header', $csv)){
+			if(count($header)!=count($this->csv['header'])){
+				throw new \Exception('header('.count($header).') should contain the same number of elements as current('.count($this->csv['header']).')');
+			}
+		}
+
+		$this->csv['header']=$header;
+
+		return $this;			
+	}
+
 	private function validateRow($data, $len){
 		$count = count($data);
 		if ($count > $len && $len > 0) {
@@ -126,6 +139,9 @@ class Csv {
 		}
 
 	}
+
+
+
 
 	public function create($header = null) {
 		$csv = array(
