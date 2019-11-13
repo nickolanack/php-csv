@@ -120,7 +120,7 @@ class Csv {
 
 	public function setHeader($header){
 
-		if(key_exists('header', $csv)){
+		if(key_exists('header', $this->csv)){
 			if(count($header)!=count($this->csv['header'])){
 				throw new \Exception('header('.count($header).') should contain the same number of elements as current('.count($this->csv['header']).')');
 			}
