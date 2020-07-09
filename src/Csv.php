@@ -74,6 +74,10 @@ class Csv {
 			}
 
 			
+			if(empty($data)){
+				//ingnore empty rows
+				continue;
+			}
 
 			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' '.json_encode($data)); 
 			
