@@ -75,7 +75,7 @@ class Csv {
 
 			
 
-			$this->validateRow($data, $csv['length']); 
+			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' '.json_encode($data)); 
 			
 
 			$lineCount++;
@@ -131,11 +131,11 @@ class Csv {
 		return $this;			
 	}
 
-	private function validateRow($data, $len){
+	private function validateRow($data, $len, $extraInfo=''){
 		$count = count($data);
 		if ($count > $len && $len > 0) {
 			throw new \Exception(
-				'CSV file contians longer than expected: (' . $len . ':' . $count . ')');
+				'CSV file contians longer than expected: (' . $len . ':' . $count . ') '.$extraInfo);
 		}
 
 	}
