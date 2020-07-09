@@ -46,7 +46,8 @@ class Csv {
 			'length' => 0,
 			'countOnly'=>false,
 			'startAt'=>0,
-			'number'=>-1 //fill all
+			'number'=>-1, //fill all
+			'delimiter'=>','
 		);
 		// , 'encoding'=>'UTF-8'
 
@@ -61,7 +62,7 @@ class Csv {
 		// stream_encoding($handle, $csv['encoding']);
 
 		$lineCount = 0;
-		while (($data = fgetcsv($handle, 0, ',')) !== false) {
+		while (($data = fgetcsv($handle, 0, $options['delimiter'])) !== false) {
 			if (key_exists('header', $csv) && count($csv['header']) == 0) {
 				$lineCount++;
 				$csv['header'] = $data;
@@ -79,7 +80,7 @@ class Csv {
 				continue;
 			}
 
-			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' '.json_encode($data)); 
+			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' -> '.json_encode($data)); 
 			
 
 			$lineCount++;
