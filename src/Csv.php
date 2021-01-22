@@ -80,7 +80,7 @@ class Csv {
 				continue;
 			}
 
-			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' -> '.json_encode($data)); 
+			$this->validateRow($data, $csv['length'], 'at line '.$lineCount.' -> '.print_r($data, true)); 
 			
 
 			$lineCount++;
@@ -139,6 +139,7 @@ class Csv {
 	private function validateRow($data, $len, $extraInfo=''){
 		$count = count($data);
 		if ($count > $len && $len > 0) {
+			//file_put_contents('./csv.err.log', $extraInfo, FILE_APPEND);
 			throw new \Exception(
 				'CSV file contians longer than expected: (' . $len . ':' . $count . ') '.$extraInfo);
 		}
@@ -255,6 +256,12 @@ class Csv {
 	 */
 	public function getRow($index) {
 		$row = $this->csv['rows'][$index];
+
+		if(!$this->csv['hasHeader']){
+			//if there is a header then pad to match otherwise don't assume symmetrical csv
+			return $row;
+		}
+
 		return $this->_pad($row, $this->csv['header']);
 	}
 
